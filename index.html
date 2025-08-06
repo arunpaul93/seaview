@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seaview Aged Care Home - Quality Care with Compassion</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232c5aa0'><path d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/></svg>" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Seaview Aged Care</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#services" class="nav-link">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#gallery" class="nav-link">Gallery</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">Contact</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Welcome to Seaview Aged Care Home</h1>
+            <p>Providing compassionate, quality care in a warm, family-like environment</p>
+            <a href="#contact" class="cta-button">Get in Touch</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h2>About Seaview Aged Care</h2>
+                <p>Dedicated to providing exceptional care for your loved ones</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Our Mission</h3>
+                    <p>At Seaview Aged Care Home, we are committed to providing the highest quality of care in a comfortable, homelike environment. Our experienced and compassionate staff work around the clock to ensure each resident receives personalized attention and care tailored to their individual needs.</p>
+                    
+                    <h3>Why Choose Seaview?</h3>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i> 24/7 Professional Care</li>
+                        <li><i class="fas fa-check"></i> Qualified & Experienced Staff</li>
+                        <li><i class="fas fa-check"></i> Comfortable & Safe Environment</li>
+                        <li><i class="fas fa-check"></i> Nutritious Meals & Activities</li>
+                        <li><i class="fas fa-check"></i> Family-Centered Approach</li>
+                    </ul>
+                </div>
+                <div class="about-image">
+                    <img src="seaview (2).jpeg" alt="Our caring environment">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Services</h2>
+                <p>Comprehensive care tailored to individual needs</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Personal Care</h3>
+                    <p>Assistance with daily activities including bathing, dressing, and medication management.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Nutritious Meals</h3>
+                    <p>Freshly prepared, balanced meals catering to dietary requirements and preferences.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>Activities & Recreation</h3>
+                    <p>Engaging activities and programs to promote social interaction and mental stimulation.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3>Medical Care</h3>
+                    <p>Regular health monitoring and coordination with healthcare professionals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Home</h2>
+                <p>Take a look at our beautiful facility and caring environment</p>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="seaview (1).jpeg" alt="Seaview exterior" onclick="openModal(this)">
+                </div>
+                <div class="gallery-item">
+                    <img src="seaview (2).jpeg" alt="Interior view" onclick="openModal(this)">
+                </div>
+                <div class="gallery-item">
+                    <img src="seaview (3).jpeg" alt="Dining area" onclick="openModal(this)">
+                </div>
+                <div class="gallery-item">
+                    <img src="seaview (4).jpeg" alt="Garden area" onclick="openModal(this)">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>Contact Us</h2>
+                <p>Get in touch to learn more about our services or schedule a visit</p>
+            </div>
+            <div class="contact-info-center">
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <div>
+                        <h4>Phone</h4>
+                        <p>035736027</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <h4>Email</h4>
+                        <p>admin@seaviewhome.co.nz</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h4>Visiting Hours</h4>
+                        <p>9:00 AM - 6:00 PM Daily</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Seaview Aged Care</h3>
+                    <p>Providing quality care with compassion and dignity.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#gallery">Gallery</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p><i class="fas fa-phone"></i> 035736027</p>
+                    <p><i class="fas fa-envelope"></i> admin@seaviewhome.co.nz</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Seaview Aged Care Home. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Gallery -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalImage" src="" alt="">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
