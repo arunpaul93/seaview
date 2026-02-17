@@ -75,288 +75,134 @@ function changeHeroBackground() {
 // Change hero background every 8 seconds
 setInterval(changeHeroBackground, 8000);
 
-// Form validation and submission
+// Form validation and submission (only if form exists on the page)
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(contactForm);
-    const formObject = {};
-    formData.forEach((value, key) => {
-        formObject[key] = value;
+if (contactForm) {
+    contactForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(contactForm);
+        const formObject = {};
+        formData.forEach((value, key) => { formObject[key] = value; });
+        if (!validateForm(formObject)) return;
+
+        const submitBtn = contactForm.querySelector('.submit-btn');
+        const originalText = submitBtn.textContent;
+        submitBtn.innerHTML = '<span class="loading"></span> Sending...';
+        submitBtn.disabled = true;
+
+        try {
+            await sendEmail(formObject);
+            showMessage('Thank you for your message! We will get back to you soon.', 'success');
+            contactForm.reset();
+            removeValidationClasses();
+        } catch (error) {
+            showMessage('Sorry, there was an error sending your message. Please try again or call us directly.', 'error');
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
     });
-    
-    // Validate form
-    if (!validateForm(formObject)) {
-        return;
-    }
-    
-    // Show loading state
-    const submitBtn = contactForm.querySelector('.submit-btn');
-    const originalText = submitBtn.textContent;
-    submitBtn.innerHTML = '<span class="loading"></span> Sending...';
-    submitBtn.disabled = true;
-    
-    try {
-        // Send email using a simple method (you'll need to implement server-side handling)
-        await sendEmail(formObject);
-        showMessage('Thank you for your message! We will get back to you soon.', 'success');
-        contactForm.reset();
-        removeValidationClasses();
-    } catch (error) {
-        showMessage('Sorry, there was an error sending your message. Please try again or call us directly.', 'error');
-    } finally {
-        // Reset button
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-});
+}
 
 function validateForm(data) {
     let isValid = true;
-    
-    // Remove previous validation classes
     removeValidationClasses();
-    
-    // Validate name
-    if (!data.name || data.name.trim().length < 2) {
-        document.getElementById('name').classList.add('error');
-        isValid = false;
-    } else {
-        document.getElementById('name').classList.add('success');
-    }
-    
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!data.email || !emailRegex.test(data.email)) {
-        document.getElementById('email').classList.add('error');
-        isValid = false;
-    } else {
-        document.getElementById('email').classList.add('success');
-    }
-    
-    // Validate subject
-    if (!data.subject) {
-        document.getElementById('subject').classList.add('error');
-        isValid = false;
-    } else {
-        document.getElementById('subject').classList.add('success');
-    }
-    
-    // Validate message
-    if (!data.message || data.message.trim().length < 10) {
-        document.getElementById('message').classList.add('error');
-        isValid = false;
-    } else {
-        document.getElementById('message').classList.add('success');
-    }
-    
+    [['name',2],['email',0],['subject',0],['message',10]].forEach(([field, minLen]) => {
+        const el = document.getElementById(field);
+        if (!el) return;
+        const val = data[field] || '';
+        const emailOk = field !== 'email' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+        if (!val || val.trim().length < minLen || !emailOk) { el.classList.add('error'); isValid = false; }
+        else { el.classList.add('success'); }
+    });
     return isValid;
 }
 
 function removeValidationClasses() {
-    const formElements = contactForm.querySelectorAll('input, select, textarea');
-    formElements.forEach(element => {
-        element.classList.remove('error', 'success');
-    });
+    if (!contactForm) return;
+    contactForm.querySelectorAll('input, select, textarea').forEach(el => el.classList.remove('error', 'success'));
 }
 
 async function sendEmail(formData) {
-    try {
-        // Option 1: Try using EmailJS (free email service)
-        if (typeof emailjs !== 'undefined') {
-            const result = await emailjs.send(
-                'YOUR_SERVICE_ID', // You'll need to set this up
-                'YOUR_TEMPLATE_ID', // You'll need to set this up
-                {
-                    from_name: formData.name,
-                    from_email: formData.email,
-                    phone: formData.phone || 'Not provided',
-                    subject: formData.subject,
-                    message: formData.message,
-                    to_email: 'admin@seaviewhome.co.nz'
-                },
-                'YOUR_PUBLIC_KEY' // You'll need to set this up
-            );
-            return { success: true, message: 'Message sent successfully!' };
-        }
-        
-        // Option 2: Try using your PHP handler
-        const response = await fetch('contact.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        });
-
-        if (!response.ok) {
-            throw new Error('Server error');
-        }
-
-        const result = await response.json();
-        
-        if (result.error) {
-            throw new Error(result.error);
-        }
-
-        return result;
-        
-    } catch (error) {
-        // Option 3: Try using Formspree (free form service)
-        try {
-            const formspreeResponse = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    phone: formData.phone,
-                    subject: formData.subject,
-                    message: formData.message,
-                    _replyto: formData.email,
-                    _subject: `Seaview Contact: ${formData.subject}`
-                })
-            });
-
-            if (formspreeResponse.ok) {
-                return { success: true, message: 'Message sent successfully via Formspree!' };
-            }
-        } catch (formspreeError) {
-            console.log('Formspree also failed:', formspreeError);
-        }
-        
-        // Option 4: Use Web3Forms (another free service)
-        try {
-            const web3formsResponse = await fetch('https://api.web3forms.com/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    access_key: 'a64ad81e-42af-4a69-b268-ce6d6d454825', // Your Web3Forms access key
-                    name: formData.name,
-                    email: formData.email,
-                    phone: formData.phone,
-                    subject: `Seaview Contact: ${formData.subject}`,
-                    message: formData.message,
-                    to: 'admin@seaviewhome.co.nz'
-                })
-            });
-
-            const web3Result = await web3formsResponse.json();
-            if (web3Result.success) {
-                return { success: true, message: 'Message sent successfully!' };
-            }
-        } catch (web3Error) {
-            console.log('Web3Forms failed:', web3Error);
-        }
-        
-        // Fallback to mailto if all services fail
-        console.warn('All email services failed, using mailto fallback');
-        
-        const subject = encodeURIComponent(`Seaview Aged Care: ${formData.subject}`);
-        const body = encodeURIComponent(`
-Name: ${formData.name}
-Email: ${formData.email}
-Phone: ${formData.phone || 'Not provided'}
-Subject: ${formData.subject}
-
-Message:
-${formData.message}
-
----
-Please respond to this inquiry as soon as possible.
-        `);
-        
-        const mailtoLink = `mailto:admin@seaviewhome.co.nz?subject=${subject}&body=${body}`;
-        window.open(mailtoLink);
-        
-        throw new Error('Please send the email using your email client, or try again later.');
-    }
+    // Try PHP handler
+    const response = await fetch('contact.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(formData) });
+    if (response.ok) { const result = await response.json(); if (!result.error) return result; }
+    // Fallback to mailto
+    const subject = encodeURIComponent('Seaview Aged Care: ' + formData.subject);
+    const body = encodeURIComponent('Name: '+formData.name+'\nEmail: '+formData.email+'\nMessage:\n'+formData.message);
+    window.open('mailto:admin@seaviewhome.co.nz?subject='+subject+'&body='+body);
+    throw new Error('Please send via your email client.');
 }
 
 function showMessage(message, type) {
-    // Remove existing messages
-    const existingMessages = contactForm.querySelectorAll('.success-message, .error-message');
-    existingMessages.forEach(msg => msg.remove());
-    
-    // Create new message
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `${type}-message`;
-    messageDiv.style.display = 'block';
-    messageDiv.textContent = message;
-    
-    // Insert message at the top of the form
-    contactForm.insertBefore(messageDiv, contactForm.firstChild);
-    
-    // Remove message after 5 seconds
-    setTimeout(() => {
-        messageDiv.remove();
-    }, 5000);
+    if (!contactForm) return;
+    contactForm.querySelectorAll('.success-message, .error-message').forEach(m => m.remove());
+    const div = document.createElement('div');
+    div.className = type + '-message';
+    div.style.display = 'block';
+    div.textContent = message;
+    contactForm.insertBefore(div, contactForm.firstChild);
+    setTimeout(() => div.remove(), 5000);
 }
 
-// Navbar scroll effect
+// Sticky navbar shrink on scroll + hero parallax
+const navbar = document.querySelector('.navbar');
+const heroContent = document.querySelector('.hero-content');
+
 window.addEventListener('scroll', () => {
-    const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 100) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-        navbar.style.backdropFilter = 'blur(10px)';
+    const scrollY = window.scrollY;
+
+    // Navbar shrink
+    if (scrollY > 80) {
+        navbar.classList.add('scrolled');
     } else {
-        navbar.style.background = '#fff';
-        navbar.style.backdropFilter = 'none';
+        navbar.classList.remove('scrolled');
+    }
+
+    // Hero parallax: move text up and fade out as user scrolls
+    if (heroContent && scrollY < window.innerHeight) {
+        const ratio = scrollY / window.innerHeight;
+        heroContent.style.transform = `translateY(${scrollY * 0.35}px)`;
+        heroContent.style.opacity = 1 - ratio * 1.2;
     }
 });
 
-// Intersection Observer for animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
+// Intersection Observer for scroll animations
+const scrollObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+            entry.target.classList.add('scroll-visible');
+            scrollObserver.unobserve(entry.target); // animate once
         }
     });
-}, observerOptions);
+}, {
+    threshold: 0.15,
+    rootMargin: '0px 0px -60px 0px'
+});
 
-// Observe elements for animation
+// Observe all scroll-animated elements
 document.addEventListener('DOMContentLoaded', () => {
-    const animateElements = document.querySelectorAll('.service-card, .gallery-item, .contact-item');
-    
-    animateElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
+    document.querySelectorAll('.scroll-fade-up, .scroll-slide-left, .scroll-slide-right, .scroll-scale-in').forEach(el => {
+        scrollObserver.observe(el);
     });
 });
 
 // Phone number formatting (for New Zealand numbers)
 const phoneInput = document.getElementById('phone');
-phoneInput.addEventListener('input', function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    
-    // Format for NZ numbers
-    if (value.length >= 2) {
-        if (value.startsWith('64')) {
-            // International format
-            value = value.replace(/(\d{2})(\d{1})(\d{3})(\d{4})/, '+$1 $2 $3 $4');
-        } else if (value.startsWith('0')) {
-            // National format
-            value = value.replace(/(\d{2})(\d{3})(\d{4})/, '$1 $2 $3');
+if (phoneInput) {
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            if (value.startsWith('64')) {
+                value = value.replace(/(\d{2})(\d{1})(\d{3})(\d{4})/, '+$1 $2 $3 $4');
+            } else if (value.startsWith('0')) {
+                value = value.replace(/(\d{2})(\d{3})(\d{4})/, '$1 $2 $3');
+            }
         }
-    }
-    
-    e.target.value = value;
-});
+        e.target.value = value;
+    });
+}
 
 // Keyboard navigation for modal
 document.addEventListener('keydown', (e) => {
@@ -372,18 +218,19 @@ function printPage() {
 }
 
 // Contact form accessibility improvements
-contactForm.addEventListener('focusin', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-        e.target.parentElement.style.transform = 'scale(1.02)';
-        e.target.parentElement.style.transition = 'transform 0.2s ease';
-    }
-});
-
-contactForm.addEventListener('focusout', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-        e.target.parentElement.style.transform = 'scale(1)';
-    }
-});
+if (contactForm) {
+    contactForm.addEventListener('focusin', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            e.target.parentElement.style.transform = 'scale(1.02)';
+            e.target.parentElement.style.transition = 'transform 0.2s ease';
+        }
+    });
+    contactForm.addEventListener('focusout', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            e.target.parentElement.style.transform = 'scale(1)';
+        }
+    });
+}
 
 // Initialize page - FORCE STAY AT TOP
 document.addEventListener('DOMContentLoaded', () => {

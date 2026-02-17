@@ -24,10 +24,26 @@ body {
 .navbar {
     background: #fff;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     z-index: 1000;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
+}
+
+.navbar.scrolled {
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+.navbar.scrolled .nav-container {
+    height: 56px;
+}
+
+.navbar.scrolled .nav-logo h2 {
+    font-size: 1.15rem;
 }
 
 .nav-container {
@@ -38,6 +54,11 @@ body {
     justify-content: space-between;
     align-items: center;
     height: 70px;
+    transition: height 0.4s ease;
+}
+
+.nav-logo h2 {
+    transition: font-size 0.4s ease;
 }
 
 .nav-logo h2 {
@@ -108,7 +129,7 @@ body {
     background-attachment: fixed;
     position: relative;
     border-radius: 25px;
-    margin: 0 20px 20px 20px;
+    margin: 70px 20px 20px 20px;
     overflow: hidden;
 }
 
@@ -522,7 +543,7 @@ body {
         padding: 60px 30px 50px;
         background-attachment: scroll;
         min-height: 80vh;
-        margin: 0 10px 20px 10px;
+        margin: 70px 10px 20px 10px;
         border-radius: 20px;
     }
 
@@ -590,6 +611,67 @@ body:target,
 /* Force all sections to not auto-scroll on load */
 section {
     scroll-margin-top: 0 !important;
+}
+
+/* ===== Scroll Animation Classes ===== */
+
+/* Fade up */
+.scroll-fade-up {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.scroll-fade-up.scroll-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Slide in from left */
+.scroll-slide-left {
+    opacity: 0;
+    transform: translateX(-80px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.scroll-slide-left.scroll-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Slide in from right */
+.scroll-slide-right {
+    opacity: 0;
+    transform: translateX(80px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.scroll-slide-right.scroll-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Scale in */
+.scroll-scale-in {
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-scale-in.scroll-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Stagger delay support via data-delay attribute */
+[data-delay="0"] { transition-delay: 0s; }
+[data-delay="1"] { transition-delay: 0.15s; }
+[data-delay="2"] { transition-delay: 0.3s; }
+[data-delay="3"] { transition-delay: 0.45s; }
+
+/* Hero parallax text */
+.hero-content {
+    transition: transform 0.1s linear, opacity 0.1s linear;
 }
 
 /* Loading Animation */
